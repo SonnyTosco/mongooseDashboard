@@ -1,7 +1,8 @@
 var   express     = require('express'),
       bodyParser  = require('body-parser'),
       path        = require('path'),
-      io          = require('socket.io')
+      io          = require('socket.io'),
+      mongoose    = require('mongoose')
       app         = express();
 
 app.use(bodyParser.urlencoded({extended: true}));
@@ -44,4 +45,19 @@ app.post('/species/:id', function(req, res){
 app.post('/species/:id/destroy', function(req, res){
   //query that removes that specific document
   res.redirect('/')
+})
+
+//Mongoose
+mongoose.connect('mongodb://localhost/dashboard');
+
+var AnimalSchema = new mongoose.Schema({
+  Animal: {type: String}
+}, {timestamps: true})
+
+mongoose.model('Animal', AnimalSchema);
+
+var Animal = mongoose.model('Animal');
+
+app.listen(8000, function() {
+  console.log("listening on port 8000");
 })
