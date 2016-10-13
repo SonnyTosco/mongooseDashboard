@@ -13,28 +13,52 @@ app.set('views', path.join(__dirname, './views'));
 //Routes
 
 app.get('/', function(req, res) {
-  //query to display all species
-  res.render('index');
-})
-
-app.get('/species/:id', function(req, res) {
-  //query to show that particular mongoose
-  res.render('show');
+  Animal.find({}, function(err, animals) {
+    if(err) {
+      console.log('something went wrong');
+    } else {
+        console.log(animals);
+        res.render('index', {animals: animals});
+    }
+  })
 })
 
 app.get('/species/new', function(req, res) {
-  //want to make sure that the create view is hit
   res.render('create');
 })
 
 app.post('/species', function(req, res) {
-  //query to insert a new instance of mongoose into the db
-  res.redirect('/');
+  var animal = new Animal({
+    Animal: req.body.Animal
+  });
+  animal.save(function(err) {
+    if(err) {
+      console.log('something went wrong');
+    } else {
+      console.log('successfully added animal');
+      res.redirect('/');
+    }
+  })
+})
+
+app.get('/species/:id', function(req, res) {
+  Animal.find({}, function(err, animals) {
+    res.render('show');
+  })
 })
 
 app.get('/species/:id/edit', function(req, res){
+  Animal.update({}, function(err, animals) {
+    if(err) {
+      console.log('something went wrong');
+    } else {
+      console.log(animals);
+      res.render('edit', {animals: animals});
+    }
+  })
   //query that specific mongoose that exists in the db
-  res.render('edit');
+  //ask Phil if it's because you haven't updated it here yet
+  //also ask how the id has to be passed here
 })
 
 app.post('/species/:id', function(req, res){
@@ -43,8 +67,13 @@ app.post('/species/:id', function(req, res){
 })
 
 app.post('/species/:id/destroy', function(req, res){
-  //query that removes that specific document
-  res.redirect('/')
+  Animal.remove({}, function(err, animals) {
+    if(err) {
+      console.log('something went wrong');
+    } else {
+      res.redirect('/')
+    }
+  })
 })
 
 //Mongoose

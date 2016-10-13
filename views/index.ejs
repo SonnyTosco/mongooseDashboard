@@ -5,6 +5,13 @@
     <title>This is my root file</title>
   </head>
   <body>
-
+    <a href = "/species/new">Create</a>
+    <% for(var animal of animals){ %>
+        <p>Animal: <%= animal.Animal %></p>
+        <a href = "/species/<%= animal._id %>">Show</a>
+        <a href = "/species/<%= animal._id %>/edit">Edit</a>
+        <a href = "/species/<%= animal._id %>/destroy">Delete</a>
+        <hr>
+    <% } %>
   </body>
 </html>
