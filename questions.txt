@@ -1,0 +1,31 @@
+Tried to use the following code to make an update to an existing field:
+
+app.post('/species/:id', function(req, res){
+  //query that stores the updated information for that instance
+  Animal.update({_id: req.params.id}, {$set: function(err, animals) {
+    if(err) {
+      console.log('something went wrong');
+    } else {
+      res.redirect('/', animal);
+      }
+    }
+  })
+})
+
+Received the following error:
+    Error: Invalid atomic update value for $set. Expected an object, received function
+
+Fix #1
+  - since it's expecting an object and we threw it a function, we can take the text
+  input value and save it to that specific id
+    - however, i don't know how to handle the error from here
+
+Result
+  app.post('/species/:id', function(req, res){
+    //query that stores the updated information for that instance
+    Animal.update({_id: req.params.id}, {$set:
+      {Animal: req.body.Animal}
+    }, function(err, result){
+      res.redirect('/');
+    })
+  })

@@ -48,26 +48,30 @@ app.get('/species/:id', function(req, res) {
 })
 
 app.get('/species/:id/edit', function(req, res){
-  Animal.update({}, function(err, animals) {
+  //need to pass the animal object
+  Animal.findOne({_id: req.params.id}, function(err, animals) {
     if(err) {
       console.log('something went wrong');
     } else {
+      console.log('line56');
+      console.log(req.params.id);
       console.log(animals);
-      res.render('edit', {animals: animals});
+      res.render('edit', {animal: animals});
     }
   })
-  //query that specific mongoose that exists in the db
-  //ask Phil if it's because you haven't updated it here yet
-  //also ask how the id has to be passed here
 })
 
 app.post('/species/:id', function(req, res){
   //query that stores the updated information for that instance
-  res.redirect('/');
+  Animal.update({_id: req.params.id}, {$set:
+    {Animal: req.body.Animal}
+  }, function(err, result){
+    res.redirect('/');
+  })
 })
 
 app.post('/species/:id/destroy', function(req, res){
-  Animal.remove({}, function(err, animals) {
+  Animal.remove({_id: req.params.id}, function(err, animals) {
     if(err) {
       console.log('something went wrong');
     } else {

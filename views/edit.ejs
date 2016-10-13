@@ -5,13 +5,12 @@
     <title>This is my edit view</title>
   </head>
   <body>
-    <% for(var animal of animals){ %>
       <form action = "/species/<%= animal._id %>" method = "post">
+        <%= animal._id %>
         Animal:
-        <input type = "text" name = "Animal"><br>
+        <input type = "text" name = "Animal" value="<%= animal.Animal %>"><br>
         <input type = "submit" value = "Submit">
       </form>
-    <% } %>
     <a href = "/">Back</a>
   </body>
 </html>
