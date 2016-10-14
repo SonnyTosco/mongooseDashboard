@@ -1,0 +1,156 @@
+Create
+
+    <a href = "/species/new">Create</a>
+
+This line in our index file links to a route in our server file to create a new animal object.
+
+    app.get('/species/new', function(req, res) {
+      res.render('create');
+    })
+
+This is the route that is hit in our server file. It renders our 'create' view.
+
+    <form action = "/species" method = "post">
+      Animal:
+      <input type = "text" name = "Animal"><br>
+      <input type = "submit" value = "Submit">
+    </form>
+
+Our create view has a form with a post route called ""/species".
+We call this field Animal
+
+    app.post('/species', function(req, res) {
+      var animal = new Animal({
+        Animal: req.body.Animal
+      });
+      animal.save(function(err) {
+        if(err) {
+          console.log('something went wrong');
+        } else {
+          console.log('successfully added animal');
+          res.redirect('/');
+        }
+      })
+    })
+
+we created a var called animal that calls upon our Animal constructor to create a
+new Animal object. "Animal:" is the key and we are requesting it from the html body.
+We named it Animal as well in the field so we'll set the variable "Animal:"
+to req.body.Animal.
+
+We're then going to store this variable in the database using .save. After we save it,
+we want to redirect the user back to the root ('/').
+
+It is now part of our animals collection and we'll display it when we render the
+animals collection in the index view.
+
+Read
+
+    app.get('/', function(req, res) {
+      Animal.find({}, function(err, animals) {
+        if(err) {
+          console.log('something went wrong');
+        } else {
+            res.render('index', {animals: animals});
+        }
+      })
+    })
+
+We have to first get all of the items that are in our database into our root file.
+'Animal.find' is the query we use to pull all of our data out of our model called Animal.
+Our callback function takes two parameters; one to handle an error, and the other
+for our collection called animals. We are going to render our index.ejs file by calling
+it 'index' and we're passing the key animals and animals object.
+
+    <% for(var animal of animals){ %>
+        <p>Animal: <%= animal.Animal %></p>
+        <a href = "/species/<%= animal._id %>">Show</a>
+        <a href = "/species/<%= animal._id %>/edit">Edit</a>
+        <form action = "/species/<%= animal._id %>/destroy" method = "post">
+          <input type = "submit" value = "delete">
+        </form>
+        <hr>
+    <% } %>
+
+We use <% for(var animal of animals){ %> and <% } %> which are embedded javascript or
+ejs to call every animal object from our animals collection. We display each
+animal by using <%= animal.Animal %> since animal is the variable we created above
+(var animal of animals). animal is a variable we created and animals is our collection.
+Since we are referencing the animals collection, we want the value of the key Animal to display
+so we use animal.Animal
+
+Out of the animals collection, we also want to be able to refer to specific entries so we
+reference them by their schema ID by using animal._id
+
+The problem says that our delete function will be a post route so we'll have to
+create a form and specify that we want to pass the information through a post method.
+
+Update
+
+    <a href = "/species/<%= animal._id %>/edit">Edit</a>
+
+We ensure that the animal's ID is carried from the object.
+
+    app.get('/species/:id/edit', function(req, res){
+      //need to pass the animal object
+      Animal.findOne({_id: req.params.id}, function(err, animals) {
+        if(err) {
+          console.log('something went wrong');
+        } else {
+          console.log('line56');
+          console.log(req.params.id);
+          console.log(animals);
+          res.render('edit', {animal: animals});
+        }
+      })
+    })
+
+We are using trying to use the Animal var which contains our model and using the
+findOne method to call one specific object out of the animals array. We designate which
+one is the specific object by using {_id: req.params.id}.
+
+From here, we render the edit view. Since we used animal in the root file as our variable,
+we're using animal as the key to reference our animals object (ask Brendan to be sure)
+
+    <input type = "text" name = "Animal" value="<%= animal.Animal %>"><br>
+
+We are able to display the Animal name in the text field because we used the variable
+animal to store our animal object and we want to display the value of the Animal key.
+
+    <form action = "/species/<%= animal._id %>" method = "post">
+
+The form then hits this post route in our server.
+
+    app.post('/species/:id', function(req, res){
+      //query that stores the updated information for that instance
+      Animal.update({_id: req.params.id}, {$set:
+        {Animal: req.body.Animal}
+      }, function(err, result){
+        res.redirect('/');
+      })
+    })
+
+We use the selector set to take the value of the textfield Animal (req.body.Animal)
+and replace it with the current value of the key Animal.
+
+Once this is done we create the callback function to return us to the route.
+
+Delete
+
+    <form action = "/species/<%= animal._id %>/destroy" method = "post">
+      <input type = "submit" value = "delete">
+    </form>
+
+We created our delete function in this form because the assignment asked for a post method.
+
+    app.post('/species/:id/destroy', function(req, res){
+      Animal.remove({_id: req.params.id}, function(err, result){
+        if(err) {
+          console.log(err);
+        }
+        res.redirect('/');
+      })
+    })
+
+Again we want to pass in the specific id to reference this object. We use remove
+on the Animal model and make sure that we redirect the user back to the root file. 

@@ -17,7 +17,6 @@ app.get('/', function(req, res) {
     if(err) {
       console.log('something went wrong');
     } else {
-        console.log(animals);
         res.render('index', {animals: animals});
     }
   })
@@ -42,8 +41,13 @@ app.post('/species', function(req, res) {
 })
 
 app.get('/species/:id', function(req, res) {
-  Animal.find({}, function(err, animals) {
-    res.render('show');
+  Animal.findOne({_id: req.param.id}, function(err, animals) {
+    if(err) {
+      console.log('something went wrong');
+    } else {
+      console.log(animals);
+      res.render('show', {animals: req.body.Animal});
+    }
   })
 })
 
@@ -71,12 +75,11 @@ app.post('/species/:id', function(req, res){
 })
 
 app.post('/species/:id/destroy', function(req, res){
-  Animal.remove({_id: req.params.id}, function(err, animals) {
+  Animal.remove({_id: req.params.id}, function(err, result){
     if(err) {
-      console.log('something went wrong');
-    } else {
-      res.redirect('/')
+      console.log(err);
     }
+    res.redirect('/');
   })
 })
 

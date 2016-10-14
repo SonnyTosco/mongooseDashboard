@@ -10,7 +10,9 @@
         <p>Animal: <%= animal.Animal %></p>
         <a href = "/species/<%= animal._id %>">Show</a>
         <a href = "/species/<%= animal._id %>/edit">Edit</a>
-        <a href = "/species/<%= animal._id %>/destroy">Delete</a>
+        <form action = "/species/<%= animal._id %>/destroy" method = "post">
+          <input type = "submit" value = "delete">
+        </form>
         <hr>
     <% } %>
   </body>
